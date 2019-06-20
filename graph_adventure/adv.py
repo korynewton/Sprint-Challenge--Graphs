@@ -22,8 +22,107 @@ world.printRooms()
 player = Player("Name", world.startingRoom)
 
 
-# FILL THIS IN
+# You may find the commands player.currentRoom.id, player.currentRoom.getExits() and player.travel(direction) useful.
+
+# # FILL THIS IN
 traversalPath = []
+
+graph = {}
+
+s = Stack()
+s.push(player.currentRoom)
+
+
+def decide_next_move(room):
+    if 'n' in graph[room] and graph[room]['n'] == '?':
+        return 'n'
+    elif 'e' in graph[room] and graph[room]['e'] == '?':
+        return 'e'
+    elif 's' in graph[room] and graph[room]['s'] == '?':
+        return 's'
+    elif 'w' in graph[room] and graph[room]['w'] == '?':
+        return 'w'
+
+
+def opposite_direction(direction):
+    if direction == 'n':
+        return 's'
+    if direction == 's':
+        return 'n'
+    if direction == 'e':
+        return 'w'
+    if direction == 'w':
+        return 'e'
+
+
+count = 0
+while s.size() > 0:
+    # while count < 5:
+        # remove last item
+    prev_room = s.pop()
+    print('current', prev_room.id)
+    # get exits in current room
+    options = prev_room.getExits()
+    # print('current id:', prev_room.currentRoom.id)
+    # print('options', options)
+
+    # update graph with unexplored rooms
+    if prev_room.id not in graph:
+        graph[prev_room.id] = {x: '?' for x in options}
+        print('current graph:', graph)
+
+    # decide next room and log in traversalPath
+    direction = decide_next_move(prev_room.id)
+    if prev_room.getRoomInDirection(direction) == None:
+        break
+    opposite = opposite_direction(direction)
+    traversalPath.append(direction)
+    print('moving', direction)
+    player.travel(direction)
+
+    # update graph with new knowledge
+    print('room after moving', player.currentRoom.id)
+    print('opo', opposite)
+    new_room = player.currentRoom
+
+    if new_room.id not in graph:
+        graph[new_room.id] = {x: '?' for x in new_room.getExits()}
+
+    graph[prev_room.id][direction] = new_room.id
+    graph[new_room.id][opposite] = prev_room.id
+
+    s.push(new_room)
+
+    # s.push(prev_room)
+    print(graph)
+    print('next', player.currentRoom.id)
+    # count += 1
+
+print('traversal:', traversalPath)
+
+
+# def choose_dir():
+#     exits = player.currentRoom.getExits()
+
+
+# # every move we will need to log in the traversal path array
+
+
+# def move(prev_room, direction):
+#     traversalPath.append(direction)
+
+#     player.travel(direction)
+
+#     # log where able to travel from/to
+#     graph[prev_room][direction] = player.currentRoom.id
+
+
+# rooms_to_be_checked = Stack()
+
+# # while rooms_to_be_checked > 0:
+
+# print('current', player.currentRoom.id)
+# print('exits', player.currentRoom.getExits())
 
 
 # TRAVERSAL TEST
